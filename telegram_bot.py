@@ -40,7 +40,8 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         photo=open(local_copy, 'rb'),
         caption=reply,
         parse_mode='Markdown',
-        reply_to_message_id=update.message.message_id
+        reply_to_message_id=update.message.message_id,
+        has_spoiler=True
     )
     os.remove(local_copy)
 
