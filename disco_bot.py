@@ -28,9 +28,10 @@ async def on_ready():
 # Event listener for when a message is sent in a channel
 @bot.event
 async def on_message(message):
-    # Ignore messages sent by the bot itself
-    if message.author == bot.user:
+    if message.author == bot.user:  # Ignore messages sent by the bot itself
         return
+
+    user_id = message.author.id
 
     if message.content is not None:
         if message.content.startswith(PROMPT_CMD):
@@ -40,7 +41,7 @@ async def on_message(message):
 
             print(f'Currently working on: "{prompt}"')
             start_time = time.time()
-            local_copy = image_from_prompt(prompt)
+            local_copy = image_from_prompt(prompt, user_id)
             end_time = time.time()
             duration = round(end_time - start_time, 1)
             reply = f'Here is your image! \nI worked for {duration} seconds on it.'
@@ -50,7 +51,7 @@ async def on_message(message):
             os.remove(local_copy)
 
         if message.content.startswith(CONFIG_CMD):
-            response = handle_config_request(message.content)
+            response = handle_config_request(message.content, user_id)
             await message.reply(response)
 
 

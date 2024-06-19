@@ -11,39 +11,74 @@ SERVER_IP = '192.168.178.25'
 PROMPT_CMD = '/focus '
 CONFIG_CMD = '/focus_cfg '
 
+CONFIG_LIST = 'LIST'
+CONFIG_CLEAR = 'CLEAR'
+CONFIG_ADD_STYLE = 'APPEND_STYLE'
+
 TEMP_FOLDER = 'tmp/'
 CFG_FOLDER = 'cfg/'
 
-user_config = {
-    'performance_selection': "Extreme Speed",
-}
 
+def handle_config_request(cfg_request, user_id=None):
+    if user_id is None:
+        return f'Sorry, I do not know who this user is.'
 
-async def handle_config_request(cfg_request):
+    if not os.path.exists(CFG_FOLDER):
+        os.mkdir(CFG_FOLDER)
+
+    config_file = f'{CFG_FOLDER}{user_id}.json'
+    user_config = load_dict(config_file)
+    if user_config is None:
+        user_config = {}  # create empty config
+
     cfg_command = cfg_request.replace(CONFIG_CMD, '', 1)
     setting_name = cfg_command.split(' ', 1)[0]
     setting_value = cfg_command.replace(f'{setting_name} ', '', 1)
 
-    print(f'Attempting to set "{setting_name}" to "{setting_value}"')
+    print(f'Config request: "{setting_name}" with "{setting_value}"')
+
+    if setting_name == CONFIG_LIST:
+        return f'Current config:\n{json.dumps(user_config, indent=2)}'
+
+    if setting_name == CONFIG_CLEAR:
+        if setting_value in user_config:
+            user_config.pop(setting_value)
+            save_dict(config_file, user_config)
+            return f'I have removed `{setting_value}` from your config.'
+        else:
+            return f'Setting {setting_value} not found in your config.'
 
     if setting_name == 'performance_selection':
         valid_settings = ['Quality', 'Speed', 'Extreme Speed']
-        if setting_value in valid_settings:
-            user_config.update({setting_name: setting_value})
-            return f'Updated setting `{setting_name}` successfully'
+        if setting_value not in valid_settings:
+            return f'Setting `{setting_name}` with `{setting_value}` is not a valid config entry'
 
     if setting_name == 'style_selections':
-        if setting_value in all_fc_styles:
-            user_config.update({setting_name: [setting_value]})
-            return f'Updated setting `{setting_name}` successfully'
+        if setting_value not in all_fc_styles:
+            return f'Setting `{setting_name}` with `{setting_value}` is not a valid config entry'
+        else:
+            setting_value = [setting_value]  # needs to be an array
+
+    if setting_name == CONFIG_ADD_STYLE:
+        if setting_value not in all_fc_styles:
+            return f'Setting `{setting_name}` with `{setting_value}` is not a valid config entry'
+        else:
+            current_styles = user_config.get('style_selections')
+            if setting_value not in current_styles:
+                current_styles.append(setting_value)
+            setting_name = 'style_selections'
+            setting_value = current_styles
+
+    user_config.update({setting_name: setting_value})
+    save_dict(config_file, user_config)
 
     # default response
-    return f'Setting `{setting_name}` with `{setting_value}` is not a valid config entry'
+    return f'I have added `{setting_name}` with `{setting_value}` to your config.'
 
 
-def image_from_prompt(prompt):
+def image_from_prompt(prompt, user_id=None):
     try:
-        json_response = generate_image(prompt)
+        json_response = generate_image(prompt, user_id)
         resp_obj = json.loads(json_response)
 
         if len(resp_obj) > 0:
@@ -52,12 +87,12 @@ def image_from_prompt(prompt):
                 image_url = resp_obj['url'].replace('127.0.0.1', SERVER_IP)
                 local_copy = download_file(image_url)
                 return local_copy
-    except:
-        print('Something went wrong when trying to generate image...')
+    except Exception as ex:
+        print(f'Something went wrong when trying to generate image: {ex.args}')
         return None
 
 
-def generate_image(prompt):
+def generate_image(prompt, user_id=None):
     import requests
     import json
 
@@ -65,6 +100,13 @@ def generate_image(prompt):
 
     current_config = copy.deepcopy(default_cfg)
     current_config.update({'prompt': prompt})
+
+    user_config = {}
+
+    if user_id is not None:
+        file_config = load_dict(f'{CFG_FOLDER}{user_id}.json')
+        if file_config is not None:
+            user_config = file_config
 
     for param in user_config:
         if param in current_config:
@@ -95,3 +137,22 @@ def download_file(file_url):
             file.write(file_resp.content)
         return file_local
     return None
+
+
+def save_dict(file_name, dictionary):
+    try:
+        with open(file_name, "w") as json_file:
+            json.dump(dictionary, json_file)
+    except:
+        print(f'Error opening file: {file_name}')
+
+
+def load_dict(file_name):
+    json_object = None
+    try:
+        with open(file_name, 'r') as json_file:
+            json_object = json.load(json_file)
+    except:
+        print(f'Error opening file: {file_name}')
+
+    return json_object
