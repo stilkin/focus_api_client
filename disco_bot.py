@@ -1,4 +1,6 @@
 import os
+import time
+
 from dotenv import load_dotenv
 
 import discord
@@ -11,21 +13,10 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 PROMPT_CMD = '/focus '
 CONFIG_CMD = '/focus_cfg '
-SERVER_IP = '192.168.178.25'
-TEMP_FOLDER = 'tmp/'
 
 intents = discord.Intents.default()
 intents.message_content = True  # Enable access to message content
 bot = commands.Bot(command_prefix='!', intents=intents)
-
-focus_config = {
-    'performance_selection': "Speed",
-    'style_selections': [
-        "Fooocus V2",
-        "Fooocus Enhance",
-        "Fooocus Sharp"
-    ]
-}
 
 
 # Event listener for when the bot has connected to the server
@@ -45,14 +36,18 @@ async def on_message(message):
         if message.content.startswith(PROMPT_CMD):
             prompt = message.content.replace(PROMPT_CMD, '', 1)
             reply = f'So you want me to show you `{prompt}`, okay. \nPlease wait a minute...'
-            await message.reply(reply)
+            await message.author.send(reply)
 
             print(f'Currently working on: "{prompt}"')
+            start_time = time.time()
             local_copy = image_from_prompt(prompt)
-            reply = f'Here is your image! \n'
+            end_time = time.time()
+            duration = round(end_time - start_time, 1)
+            reply = f'Here is your image! \nI worked for {duration} seconds on it.'
 
             file = discord.File(local_copy, filename=local_copy)
             await message.reply(reply, file=file)
+            os.remove(local_copy)
 
         if message.content.startswith(CONFIG_CMD):
             response = handle_config_request(message.content)

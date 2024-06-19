@@ -86,15 +86,12 @@ def download_file(file_url):
     file_resp = requests.get(file_url)
     file_local = file_url.rsplit('/', 1)[-1]
     file_local = f'tmp/{file_local}'
+
+    if not os.path.exists(TEMP_FOLDER):
+        os.mkdir(TEMP_FOLDER)
+
     if file_resp.status_code == 200:
         with open(file_local, 'wb') as file:
             file.write(file_resp.content)
         return file_local
     return None
-
-
-# main code block
-
-if not os.path.exists(TEMP_FOLDER):
-    print(f'Folder f{TEMP_FOLDER} does not exist, creating...')
-    os.mkdir(TEMP_FOLDER)
