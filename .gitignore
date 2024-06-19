@@ -1,0 +1,8 @@
+# gitignore
+.env
+tmp/
+
+
+.venv
+.idea/
+__pycache__/
