@@ -52,7 +52,7 @@ async def on_message(message):
 
         if message.content.startswith(CONFIG_CMD):
             response = handle_config_request(message.content, user_id)
-            await message.reply(response)
+            await message.author.send(response)
 
 
 # Run the bot with the specified token
