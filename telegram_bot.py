@@ -52,7 +52,7 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         parse_mode='Markdown',
         reply_to_message_id=update.message.message_id
     )
-
+    os.remove(local_copy)
 
 async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     response = handle_config_request(update.message.text, update.effective_user.id)
