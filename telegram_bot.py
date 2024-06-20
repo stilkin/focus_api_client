@@ -23,7 +23,12 @@ logger = logging.getLogger(__name__)
 # Define a few command handlers. These usually take the two arguments update and context.
 
 async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    # update.effective_user
+    parts = update.message.text.split()
+    if len(parts) < 2:
+        reply = f'I am sorry, but your command {update.message.text} appears to be missing some parameters...'
+        await update.message.from_user.send_message(reply)
+        return
+
     prompt = update.message.text.replace(PROMPT_CMD, '', 1)
     reply = f'So you want me to show you *{prompt}* , okay. \nPlease wait a minute...'
     await update.message.reply_markdown(reply, reply_to_message_id=update.message.message_id)
@@ -47,20 +52,27 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 
 async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    parts = update.message.text.split()
+    if len(parts) < 2:
+        reply = f'I am sorry, but your command {update.message.text} appears to be missing some parameters...'
+        await update.message.from_user.send_message(reply)
+        return
+
     response = handle_config_request(update.message.text, update.effective_user.id)
     await update.message.reply_markdown(response, reply_to_message_id=update.message.message_id)
 
 
 def main() -> None:
-    """Start the bot."""
-    # Create the Application and pass it your bot's token.
     application = Application.builder().token(TOKEN).build()
 
-    # on different commands - answer in Telegram
-    application.add_handler(CommandHandler("focus", generate_image))
-    application.add_handler(CommandHandler("focus_cfg", update_config))
+    application.add_handler(CommandHandler("focus",
+                                           callback=generate_image,
+                                           filters=filters.TEXT & (~filters.COMMAND)))
 
-    # Run the bot until the user presses Ctrl-C
+    application.add_handler(CommandHandler("focus_cfg",
+                                           callback=update_config,
+                                           filters=filters.TEXT & (~filters.COMMAND)))
+
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
