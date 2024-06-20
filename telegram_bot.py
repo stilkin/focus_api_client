@@ -23,16 +23,20 @@ logger = logging.getLogger(__name__)
 # Define a few command handlers. These usually take the two arguments update and context.
 
 async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message is None:
+        print(f'Message is none: \n{update}')
+        return
+
     if update.message.from_user.is_bot:
         return
 
     parts = update.message.text.split()
     if len(parts) < 2:
-        reply = f'I am sorry, but your command {update.message.text} appears to be missing some parameters...'
-        await update.message.from_user.send_message(reply)
+        reply = f'I am sorry, but your command *{update.message.text}* appears to be missing some parameters...'
+        await update.message.reply_markdown(reply)
         return
 
-    prompt = update.message.text.replace(PROMPT_CMD, '', 1)
+    prompt = update.message.text.partition(' ')[2]
     reply = f'So you want me to show you *{prompt}* , okay. \nPlease wait a minute...'
     await update.message.reply_markdown(reply, reply_to_message_id=update.message.message_id)
 
@@ -55,16 +59,21 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 
 async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message is None:
+        print(f'Message is none: \n{update}')
+        return
+
     if update.message.from_user.is_bot:
         return
 
     parts = update.message.text.split()
     if len(parts) < 2:
-        reply = f'I am sorry, but your command {update.message.text} appears to be missing some parameters...'
-        await update.message.from_user.send_message(reply)
+        reply = f'I am sorry, but your command *{update.message.text}* appears to be missing some parameters...'
+        await update.message.reply_markdown(reply)
         return
 
-    response = handle_config_request(update.message.text, update.effective_user.id)
+    cfg_command = update.message.text.partition(' ')[2]
+    response = handle_config_request(cfg_command, update.effective_user.id)
     await update.message.reply_markdown(response, reply_to_message_id=update.message.message_id)
 
 
@@ -73,13 +82,13 @@ def main() -> None:
 
     application.add_handler(CommandHandler("focus",
                                            callback=generate_image,
-                                           filters=filters.COMMAND | filters.CHAT))
+                                           filters=filters.ALL))
 
     application.add_handler(CommandHandler("focus_cfg",
                                            callback=update_config,
-                                           filters=filters.COMMAND | filters.CHAT))
+                                           filters=filters.ALL))
 
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
+    application.run_polling(allowed_updates=Update.MESSAGE)
 
 
 if __name__ == "__main__":

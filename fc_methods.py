@@ -19,7 +19,7 @@ TEMP_FOLDER = 'tmp/'
 CFG_FOLDER = 'cfg/'
 
 
-def handle_config_request(cfg_request, user_id=None):
+def handle_config_request(cfg_command, user_id=None):
     if user_id is None:
         return f'Sorry, I do not know who this user is.'
 
@@ -31,7 +31,6 @@ def handle_config_request(cfg_request, user_id=None):
     if user_config is None:
         user_config = {}  # create empty config
 
-    cfg_command = cfg_request.replace(CONFIG_CMD, '', 1)
     setting_name = cfg_command.split(' ', 1)[0]
     setting_value = cfg_command.replace(f'{setting_name} ', '', 1)
 
