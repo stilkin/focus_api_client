@@ -23,6 +23,9 @@ logger = logging.getLogger(__name__)
 # Define a few command handlers. These usually take the two arguments update and context.
 
 async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message.from_user.is_bot:
+        return
+
     parts = update.message.text.split()
     if len(parts) < 2:
         reply = f'I am sorry, but your command {update.message.text} appears to be missing some parameters...'
@@ -52,6 +55,9 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
 
 async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if update.message.from_user.is_bot:
+        return
+
     parts = update.message.text.split()
     if len(parts) < 2:
         reply = f'I am sorry, but your command {update.message.text} appears to be missing some parameters...'
@@ -67,11 +73,11 @@ def main() -> None:
 
     application.add_handler(CommandHandler("focus",
                                            callback=generate_image,
-                                           filters=filters.TEXT & (~filters.COMMAND)))
+                                           filters=filters.COMMAND | filters.CHAT))
 
     application.add_handler(CommandHandler("focus_cfg",
                                            callback=update_config,
-                                           filters=filters.TEXT & (~filters.COMMAND)))
+                                           filters=filters.COMMAND | filters.CHAT))
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
