@@ -1,10 +1,9 @@
 import os
 import time
 
-from dotenv import load_dotenv
-
 import discord
 from discord.ext import commands
+from dotenv import load_dotenv
 
 from fc_methods import *
 

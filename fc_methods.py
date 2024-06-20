@@ -2,14 +2,10 @@ import copy
 import json
 import os.path
 
-import requests
-
 from fc_settings import all_fc_styles, default_cfg
+from utilities import save_dict, load_dict, download_file
 
 SERVER_IP = '192.168.178.25'
-
-PROMPT_CMD = '/focus '
-CONFIG_CMD = '/focus_cfg '
 
 CONFIG_LIST = 'LIST'
 CONFIG_CLEAR = 'CLEAR'
@@ -86,7 +82,7 @@ def image_from_prompt(prompt, user_id=None):
             resp_obj = resp_obj[0]
             if 'url' in resp_obj:
                 image_url = resp_obj['url'].replace('127.0.0.1', SERVER_IP)
-                local_copy = download_file(image_url)
+                local_copy = download_file(image_url, TEMP_FOLDER)
                 return local_copy
     except Exception as ex:
         print(f'Something went wrong when trying to generate image: {ex.args}')
@@ -123,37 +119,3 @@ def generate_image(prompt, user_id=None):
 
     response = requests.request('POST', url, headers=headers, data=payload)
     return response.text
-
-
-def download_file(file_url):
-    file_resp = requests.get(file_url)
-    file_local = file_url.rsplit('/', 1)[-1]
-    file_local = f'tmp/{file_local}'
-
-    if not os.path.exists(TEMP_FOLDER):
-        os.mkdir(TEMP_FOLDER)
-
-    if file_resp.status_code == 200:
-        with open(file_local, 'wb') as file:
-            file.write(file_resp.content)
-        return file_local
-    return None
-
-
-def save_dict(file_name, dictionary):
-    try:
-        with open(file_name, 'w', encoding='utf-8') as json_file:
-            json.dump(dictionary, json_file)
-    except:
-        print(f'Error opening file: {file_name}')
-
-
-def load_dict(file_name):
-    json_object = None
-    try:
-        with open(file_name, 'r', encoding='utf-8') as json_file:
-            json_object = json.load(json_file)
-    except:
-        print(f'Error opening file: {file_name}')
-
-    return json_object
