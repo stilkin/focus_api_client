@@ -26,15 +26,14 @@ def handle_config_request(cfg_command, user_id=None):
     if not os.path.exists(CFG_FOLDER):
         os.mkdir(CFG_FOLDER)
 
+    setting_name = cfg_command.split(' ', 1)[0]
+    setting_value = cfg_command.replace(f'{setting_name} ', '', 1)
+    print(f'Config request: "{setting_name}" with "{setting_value}"')
+
     config_file = f'{CFG_FOLDER}{user_id}.json'
     user_config = load_dict(config_file)
     if user_config is None:
         user_config = {}  # create empty config
-
-    setting_name = cfg_command.split(' ', 1)[0]
-    setting_value = cfg_command.replace(f'{setting_name} ', '', 1)
-
-    print(f'Config request: "{setting_name}" with "{setting_value}"')
 
     if setting_name == CONFIG_LIST:
         return f'Current config:\n{json.dumps(user_config, indent=2)}'
@@ -46,6 +45,9 @@ def handle_config_request(cfg_command, user_id=None):
             return f'I have removed `{setting_value}` from your config.'
         else:
             return f'Setting {setting_value} not found in your config.'
+
+    if setting_name not in default_cfg:
+        return f'I do not know a setting called "{setting_name}"...'
 
     if setting_name == 'performance_selection':
         valid_settings = ['Quality', 'Speed', 'Extreme Speed']
@@ -119,7 +121,7 @@ def generate_image(prompt, user_id=None):
     }
     payload = json.dumps(current_config)
 
-    response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request('POST', url, headers=headers, data=payload)
     return response.text
 
 
@@ -140,7 +142,7 @@ def download_file(file_url):
 
 def save_dict(file_name, dictionary):
     try:
-        with open(file_name, "w") as json_file:
+        with open(file_name, 'w', encoding='utf-8') as json_file:
             json.dump(dictionary, json_file)
     except:
         print(f'Error opening file: {file_name}')
@@ -149,7 +151,7 @@ def save_dict(file_name, dictionary):
 def load_dict(file_name):
     json_object = None
     try:
-        with open(file_name, 'r') as json_file:
+        with open(file_name, 'r', encoding='utf-8') as json_file:
             json_object = json.load(json_file)
     except:
         print(f'Error opening file: {file_name}')

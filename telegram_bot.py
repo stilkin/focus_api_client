@@ -3,7 +3,7 @@ import time
 
 from dotenv import load_dotenv
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram.ext import Application, CommandHandler, ContextTypes, filters
 
 from fc_methods import *
 
@@ -74,7 +74,7 @@ async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
     cfg_command = update.message.text.partition(' ')[2]
     response = handle_config_request(cfg_command, update.effective_user.id)
-    await update.message.reply_markdown(response, reply_to_message_id=update.message.message_id)
+    await update.message.reply_text(response, reply_to_message_id=update.message.message_id)
 
 
 def main() -> None:
