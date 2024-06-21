@@ -5,7 +5,8 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from fc_methods import *
+from fc_methods import image_from_prompt, handle_config_request
+from or_calls import prompt_to_style
 
 load_dotenv()
 
@@ -34,16 +35,21 @@ async def on_message(message):
 
     if message.content is not None:
         if message.content.startswith(PROMPT_CMD):
-            prompt = message.content.replace(PROMPT_CMD, '', 1)
-            reply = f'So you want me to show you `{prompt}`, okay. \nPlease wait a minute...'
+            prompt = message.content.partition(' ')[2]
+            reply = f'So you want me to show you `{prompt}`, okay. \nPlease hold ⏳'
+
+            style_arr = None
+            if 'style' in prompt:
+                style_arr = prompt_to_style(prompt)  # TODO: rework this into basic RAG with chromaDB
+                reply = f'I will use these styles: *{style_arr}*. Please hold ⏳'
             await message.author.send(reply)
 
             print(f'Currently working on: "{prompt}"')
             start_time = time.time()
-            local_copy = image_from_prompt(prompt, user_id)
+            local_copy = image_from_prompt(prompt, user_id, style_arr)
             end_time = time.time()
             duration = round(end_time - start_time, 1)
-            reply = f'Here is your image! \nI worked for {duration} seconds on it.'
+            reply = f'Here is your image! I worked on it for {duration} seconds.'
 
             file = discord.File(local_copy, filename=local_copy)
             await message.reply(reply, file=file)
