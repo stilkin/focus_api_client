@@ -49,8 +49,7 @@ def prompt_to_style(prompt: str):
         choice = resp['choices'][0]
         if 'message' in choice and 'content' in choice['message']:
             return choice['message']['content']
-    return 'Random Style'  # default style
-
+    return "['Random Style']"  # default style
 
 # resp1 = prompt_to_style('a pond like Monet')
 # print(resp1)
