@@ -16,7 +16,7 @@ SYS_PROMPT = (f'You are an assistant that gets requests for images, '
               'You have to answer ONLY in a JSON array of strings, nothing else, '
               'and the strings should be EXACT matches to elements on this list. '
               'Please try to find more than one style if this is possible. '
-              'If you really don\'t know, answer with "Random Style" as the only element in the array.'
+              'If you really don\'t know, answer with ["Random Style"]'
               f'Here is the list: {all_fc_styles}')
 
 
