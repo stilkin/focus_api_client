@@ -1,11 +1,13 @@
 import logging
+import os
 import time
 
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, filters
 
-from fc_methods import *
+from fc_methods import image_from_prompt, handle_config_request
+from or_calls import prompt_to_style
 
 load_dotenv()
 TOKEN = os.getenv('TELEGRAM_TOKEN')
@@ -37,12 +39,20 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
 
     prompt = update.message.text.partition(' ')[2]
-    reply = f'So you want me to show you *{prompt}* , okay. \nPlease wait a minute...'
+    reply = (f'I will try and show you *{prompt}*! \n'
+             f'Please wait a minute...')
+
+    style_arr = None
+    if 'style' in prompt:
+        style_arr = prompt_to_style(prompt)
+        reply = (f'I will try and show you *{prompt}*!\n'
+                 f'I have chosen these styles based on your prompt: *{style_arr}*.\n'
+                 f'Please wait a minute...')
     await update.message.reply_markdown(reply, reply_to_message_id=update.message.message_id)
 
     print(f'Currently working on: "{prompt}"')
     start_time = time.time()
-    local_copy = image_from_prompt(prompt, update.effective_user.id)
+    local_copy = image_from_prompt(prompt, update.effective_user.id, style_arr)
     end_time = time.time()
     duration = round(end_time - start_time, 1)
     reply = f'*{prompt}*\nI worked on it for {duration} seconds.'

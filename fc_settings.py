@@ -292,7 +292,7 @@ default_cfg = {
     "image_number": 1,
     "image_seed": -1,
     "sharpness": 2,
-    "guidance_scale": 10,
+    "guidance_scale": 12.5,
     "base_model_name": "juggernautXL_v8Rundiffusion.safetensors",
     "refiner_model_name": "None",
     "refiner_switch": 0.5,

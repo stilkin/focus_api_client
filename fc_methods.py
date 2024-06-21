@@ -73,9 +73,9 @@ def handle_config_request(cfg_command, user_id=None):
     return f'I have added `{setting_name}` with `{setting_value}` to your config.'
 
 
-def image_from_prompt(prompt, user_id=None):
+def image_from_prompt(prompt, user_id=None, custom_styles=None):
     try:
-        json_response = generate_image(prompt, user_id)
+        json_response = generate_image(prompt, user_id, custom_styles)
         resp_obj = json.loads(json_response)
 
         if len(resp_obj) > 0:
@@ -89,7 +89,7 @@ def image_from_prompt(prompt, user_id=None):
         return None
 
 
-def generate_image(prompt, user_id=None):
+def generate_image(prompt, user_id=None, custom_styles=None):
     import requests
     import json
 
@@ -109,6 +109,10 @@ def generate_image(prompt, user_id=None):
         if param in current_config:
             print(f'Setting {param} to {user_config.get(param)}')
             current_config.update({param: user_config.get(param)})
+
+    if custom_styles is not None:
+        print(f'Setting style_selections to {custom_styles}')
+        current_config.update({'style_selections': json.loads(custom_styles)})
 
     headers = {
         'Content-Type': 'application/json',
