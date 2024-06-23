@@ -25,4 +25,5 @@ def cdb_query(prompt, n_results=3):
     )
     return results
 
+# cdb_insert()  # TODO: RUN ONCE AFTER INSTALLATION
 # cdb_query('an impressionist painting of megatron')
