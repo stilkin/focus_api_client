@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import time
@@ -8,6 +9,7 @@ from telegram.ext import Application, CommandHandler, ContextTypes, filters
 
 from fc_methods import image_from_prompt, handle_config_request
 from or_calls import prompt_to_style
+from chroma_calls import cdb_query
 
 load_dotenv()
 TOKEN = os.getenv('TELEGRAM_TOKEN')
@@ -44,8 +46,7 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     style_arr = None
     if 'style' in prompt:
-        # get a style suggestion from an LLM
-        style_arr = prompt_to_style(prompt)  # TODO: rework this into basic RAG with chromaDB?
+        style_arr = get_style_guess(prompt)  # get a style suggestion from RAG
 
     # generate and download an image
     local_copy = image_from_prompt(prompt, update.effective_user.id, style_arr)
@@ -63,6 +64,14 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         has_spoiler=True
     )
     os.remove(local_copy)
+
+
+def get_style_guess(prompt):
+    cdb_results = cdb_query(prompt, n_results=3)
+    if cdb_results is not None and 'documents' in cdb_results:
+        style_array = cdb_results['documents'][0]
+        return json.dumps(style_array)
+    return '["Random Style"]'
 
 
 async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
