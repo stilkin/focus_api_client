@@ -39,17 +39,17 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         return
 
     prompt = update.message.text.partition(' ')[2]
+    start_time = time.time()
     print(f'Currently working on: "{prompt}"')
-    # reply = f'Okay, please hold ⏳'
 
     style_arr = None
     if 'style' in prompt:
-        style_arr = prompt_to_style(prompt)  # TODO: rework this into basic RAG with chromaDB
-        reply = f'I will use these styles: *{style_arr}*.\nPlease hold ⏳'
-    # await update.message.reply_markdown(reply, reply_to_message_id=update.message.message_id)
+        # get a style suggestion from an LLM
+        style_arr = prompt_to_style(prompt)  # TODO: rework this into basic RAG with chromaDB?
 
-    start_time = time.time()
+    # generate and download an image
     local_copy = image_from_prompt(prompt, update.effective_user.id, style_arr)
+
     end_time = time.time()
     duration = round(end_time - start_time, 1)
     reply = f'I worked on it for {duration} seconds.'
