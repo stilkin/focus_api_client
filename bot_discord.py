@@ -50,7 +50,7 @@ async def on_message(message):
             style_arr = None
             if 'go wild' in prompt:
                 expanded_prompt = expand_prompt(prompt)
-                style_arr = get_style_guess(expanded_prompt['style'])
+                style_arr = get_style_guess(json.dumps(expanded_prompt['style']))
                 reply = (f'I have expanded your prompt to *{expanded_prompt['prompt']}*, '
                          f'and guesstimated your style as *{expanded_prompt['style']}*')
             elif 'style' in prompt:
