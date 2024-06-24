@@ -49,7 +49,7 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if 'go wild' in prompt:
         expanded_prompt = expand_prompt(prompt)
         print(json.dumps(expanded_prompt, indent=2))
-        style_arr = get_style_guess(expanded_prompt['style'])
+        style_arr = get_style_guess(json.dumps(expanded_prompt['style']))
     elif 'style' in prompt:
         style_arr = get_style_guess(prompt)  # get a style suggestion from RAG
 
