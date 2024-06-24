@@ -1,12 +1,13 @@
 import os
 import time
-
+import json
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
 from fc_methods import image_from_prompt, handle_config_request
-from or_calls import prompt_to_style
+from chroma_calls import cdb_query
+from or_calls import expand_prompt
 
 load_dotenv()
 
@@ -17,6 +18,14 @@ CONFIG_CMD = '/focus_cfg '
 intents = discord.Intents.default()
 intents.message_content = True  # Enable access to message content
 bot = commands.Bot(command_prefix='!', intents=intents)
+
+
+def get_style_guess(prompt):
+    cdb_results = cdb_query(prompt, n_results=3)
+    if cdb_results is not None and 'documents' in cdb_results:
+        style_array = cdb_results['documents'][0]
+        return json.dumps(style_array)
+    return '["Random Style"]'
 
 
 # Event listener for when the bot has connected to the server
@@ -39,8 +48,13 @@ async def on_message(message):
             reply = f'So you want me to show you `{prompt}`, okay. \nPlease hold ⏳'
 
             style_arr = None
-            if 'style' in prompt:
-                style_arr = prompt_to_style(prompt)  # TODO: rework this into basic RAG with chromaDB
+            if 'go wild' in prompt:
+                expanded_prompt = expand_prompt(prompt)
+                style_arr = get_style_guess(expanded_prompt['style'])
+                reply = (f'I have expanded your prompt to *{expanded_prompt['prompt']}*, '
+                         f'and guesstimated your style as *{expanded_prompt['style']}*')
+            elif 'style' in prompt:
+                style_arr = get_style_guess(prompt)
                 reply = f'I will use these styles: *{style_arr}*. Please hold ⏳'
             await message.author.send(reply)
 
