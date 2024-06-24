@@ -10,17 +10,16 @@ load_dotenv()
 TOKEN = os.getenv('OPENROUTER_TOKEN')
 APP_TAG = 'focus-client.be'
 MODEL = 'anthropic/claude-3.5-sonnet'
-SYS_PROMPT = (f'You are an assistant that gets requests for images, '
-              'and you have to determine which visual styles match most with the request. '
-              'You will be provided with a list of possible styles. '
-              'You have to answer ONLY in a JSON array of strings, nothing else, '
-              'and the strings should be EXACT matches to elements on this list. '
-              'Please try to find more than one style if this is possible. '
-              'If you really don\'t know, answer with ["Random Style"]'
-              f'Here is the list: {all_fc_styles}')
+SYS_PROMPT = (f'You are an assistant that has to work with prompt requests for image generation. '
+              'You need to do two things with these prompts. '
+              'Firstly, you have to "enrich" the prompt (make it more verbose, clear, explicit). '
+              'Secondly, you have to determine which styles match best with this prompt.'
+              'Answer only with a valid JSON object that contains two fields: "prompt" and "style".'
+              'If you feel like you need to tell me something beyond that, '
+              'you can add an extra field called "debug" and put your message there.')
 
 
-def ask_an_llm(prompt: str):
+def ask_an_llm(prompt: str, sys_prompt=SYS_PROMPT):
     url = 'https://openrouter.ai/api/v1/chat/completions'
 
     headers = {
@@ -31,7 +30,7 @@ def ask_an_llm(prompt: str):
     data = json.dumps({
         'model': MODEL,
         'messages': [
-            {'role': 'system', 'content': SYS_PROMPT},
+            {'role': 'system', 'content': sys_prompt},
             {'role': 'user', 'content': prompt}
         ]})
     response = requests.post(
@@ -43,7 +42,7 @@ def ask_an_llm(prompt: str):
     return json.loads(response.text)
 
 
-def prompt_to_style(prompt: str):
+def expand_prompt(prompt: str):
     resp = ask_an_llm(prompt)
     if resp is not None and 'choices' in resp and len(resp['choices']) > 0:
         choice = resp['choices'][0]
@@ -51,5 +50,6 @@ def prompt_to_style(prompt: str):
             return choice['message']['content']
     return '["Random Style"]'  # default style
 
-# resp1 = prompt_to_style('a pond like Monet')
+
+# resp1 = expand_prompt('a pond like Monet')
 # print(resp1)
