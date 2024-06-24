@@ -70,7 +70,8 @@ async def on_message(message):
             os.remove(local_copy)
 
         if message.content.startswith(CONFIG_CMD):
-            response = handle_config_request(message.content, user_id)
+            command = message.content.partition(' ')[2]
+            response = handle_config_request(command, user_id)
             await message.author.send(response)
 
 
