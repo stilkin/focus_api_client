@@ -45,6 +45,7 @@ async def on_message(message):
     if message.content is not None:
         if message.content.startswith(PROMPT_CMD):
             prompt = message.content.partition(' ')[2]
+            start_time = time.time()
             reply = f'So you want me to show you `{prompt}`, okay. \nPlease hold ⏳'
 
             style_arr = None
@@ -59,7 +60,6 @@ async def on_message(message):
             await message.author.send(reply)
 
             print(f'Currently working on: "{prompt}"')
-            start_time = time.time()
             local_copy = image_from_prompt(prompt, user_id, style_arr)
             end_time = time.time()
             duration = round(end_time - start_time, 1)
