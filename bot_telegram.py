@@ -7,9 +7,9 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, filters
 
-from fc_methods import image_from_prompt, handle_config_request
-from or_calls import prompt_to_style
 from chroma_calls import cdb_query
+from fc_methods import image_from_prompt, handle_config_request
+from or_calls import expand_prompt
 
 load_dotenv()
 TOKEN = os.getenv('TELEGRAM_TOKEN')
@@ -45,7 +45,12 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     print(f'Currently working on: "{prompt}"')
 
     style_arr = None
-    if 'style' in prompt:
+
+    if 'go wild' in prompt:
+        expanded_prompt = expand_prompt(prompt)
+        print(json.dumps(expanded_prompt, indent=2))
+        style_arr = get_style_guess(expanded_prompt['style'])
+    elif 'style' in prompt:
         style_arr = get_style_guess(prompt)  # get a style suggestion from RAG
 
     # generate and download an image
