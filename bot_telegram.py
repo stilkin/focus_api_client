@@ -52,6 +52,7 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         style_arr = get_style_guess(prompt)  # get a style suggestion based on the whole prompt
 
     # generate and download an image
+    prompt = json.dumps(expanded_prompt['prompt'])
     local_copy = image_from_prompt(prompt, update.effective_user.id, style_arr)
 
     end_time = time.time()
@@ -99,11 +100,11 @@ async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 def main() -> None:
     application = Application.builder().token(TOKEN).build()
 
-    application.add_handler(CommandHandler("focus",
+    application.add_handler(CommandHandler(PROMPT_CMD,
                                            callback=generate_image,
                                            filters=filters.ALL))
 
-    application.add_handler(CommandHandler("focus_cfg",
+    application.add_handler(CommandHandler(CONFIG_CMD,
                                            callback=update_config,
                                            filters=filters.ALL))
 
