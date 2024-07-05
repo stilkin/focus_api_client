@@ -48,7 +48,7 @@ def expand_prompt(prompt: str):
         choice = resp['choices'][0]
         if 'message' in choice and 'content' in choice['message']:
             return json.loads(choice['message']['content'])
-    return {'prompt': prompt, 'style': 'Random Style'}  # default
+    return {'prompt': prompt, 'style': None}  # default
 
 # resp1 = expand_prompt('a pond like Monet')
 # print(resp1)

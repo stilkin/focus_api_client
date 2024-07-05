@@ -17,9 +17,7 @@ TOKEN = os.getenv('TELEGRAM_TOKEN')
 PROMPT_CMD = '/focus '
 CONFIG_CMD = '/focus_cfg '
 
-# Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
-# set higher logging level for httpx to avoid all GET and POST requests being logged
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
@@ -44,14 +42,14 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     start_time = time.time()
     print(f'Currently working on: "{prompt}"')
 
-    style_arr = None
+    expanded_prompt = expand_prompt(prompt)
+    print('Expanded prompt: ', json.dumps(expanded_prompt, indent=2))
 
-    if 'go wild' in prompt:
-        expanded_prompt = expand_prompt(prompt)
-        print(json.dumps(expanded_prompt, indent=2))
+    style_arr = None
+    if expanded_prompt['style'] is not None:
         style_arr = get_style_guess(json.dumps(expanded_prompt['style']))
-    elif 'style' in prompt:
-        style_arr = get_style_guess(prompt)  # get a style suggestion from RAG
+    else:
+        style_arr = get_style_guess(prompt)  # get a style suggestion based on the whole prompt
 
     # generate and download an image
     local_copy = image_from_prompt(prompt, update.effective_user.id, style_arr)
