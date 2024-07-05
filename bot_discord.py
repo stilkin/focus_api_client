@@ -46,21 +46,26 @@ async def on_message(message):
         if message.content.startswith(PROMPT_CMD):
             prompt = message.content.partition(' ')[2]
             start_time = time.time()
-            reply = f'So you want me to show you `{prompt}`, okay. \nPlease hold ⏳'
+            print(f'Currently working on: "{prompt}"')
+
+            expanded_prompt = expand_prompt(prompt)
+            print('Expanded prompt: ', json.dumps(expanded_prompt, indent=2))
 
             style_arr = None
-            if 'go wild' in prompt:
-                expanded_prompt = expand_prompt(prompt)
+            if expanded_prompt['style'] is not None:
                 style_arr = get_style_guess(json.dumps(expanded_prompt['style']))
-                reply = (f'I have expanded your prompt to *{expanded_prompt['prompt']}*, '
-                         f'and guesstimated your style as *{expanded_prompt['style']}*')
-            elif 'style' in prompt:
-                style_arr = get_style_guess(prompt)
-                reply = f'I will use these styles: *{style_arr}*. Please hold ⏳'
+            else:
+                style_arr = get_style_guess(prompt)  # get a style suggestion based on the whole prompt
+
+            reply = (f'I have expanded your prompt to *{expanded_prompt['prompt']}*, '
+                     f'and guesstimated your style as *{expanded_prompt['style']}*\n'
+                     f'Please hold ⏳')
             await message.author.send(reply)
 
-            print(f'Currently working on: "{prompt}"')
+            # generate and download an image
+            prompt = json.dumps(expanded_prompt['prompt'])
             local_copy = image_from_prompt(prompt, user_id, style_arr)
+
             end_time = time.time()
             duration = round(end_time - start_time, 1)
             reply = f'Here is your image! I worked on it for {duration} seconds.'
