@@ -74,6 +74,7 @@ def handle_config_request(cfg_command, user_id=None):
 
 
 def image_from_prompt(prompt, user_id=None, custom_styles=None):
+    print(f'Generating image with prompt: {prompt}')
     try:
         json_response = generate_image(prompt, user_id, custom_styles)
         resp_obj = json.loads(json_response)

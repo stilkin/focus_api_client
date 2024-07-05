@@ -40,16 +40,16 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
     prompt = update.message.text.partition(' ')[2]
     start_time = time.time()
-    print(f'Currently working on: "{prompt}"')
 
+    print(f'Currently working on: "{prompt}"')
     expanded_prompt = expand_prompt(prompt)
-    print('Expanded prompt: ', json.dumps(expanded_prompt, indent=2))
 
     style_arr = None
     if expanded_prompt['style'] is not None:
         style_arr = get_style_guess(json.dumps(expanded_prompt['style']))
     else:
-        style_arr = get_style_guess(prompt)  # get a style suggestion based on the whole prompt
+        print('Did not get a style; defaulting to style suggestion based on whole prompt.')
+        style_arr = get_style_guess(prompt)
 
     # generate and download an image
     prompt = json.dumps(expanded_prompt['prompt'])
