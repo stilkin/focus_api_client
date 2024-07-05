@@ -14,8 +14,8 @@ from or_calls import expand_prompt
 load_dotenv()
 TOKEN = os.getenv('TELEGRAM_TOKEN')
 
-PROMPT_CMD = '/focus '
-CONFIG_CMD = '/focus_cfg '
+PROMPT_CMD = 'focus'
+CONFIG_CMD = 'focus_cfg'
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
