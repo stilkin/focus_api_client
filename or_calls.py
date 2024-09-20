@@ -8,7 +8,7 @@ load_dotenv()
 TOKEN = os.getenv('OPENROUTER_TOKEN')
 APP_URI = 'https://stilkin.eu'
 APP_TAG = 'Img Prompt Gen'
-MODEL = 'anthropic/claude-3.5-sonnet'
+MODEL = 'openai/gpt-4o-mini'
 SYS_PROMPT = (f'You are an assistant that has to work with prompt requests for image generation. '
               'You need to do two things with these prompts. '
               'Firstly, you have to "enrich" the prompt (make it more verbose, clear, explicit). '
