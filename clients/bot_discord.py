@@ -5,9 +5,9 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from fc_methods import image_from_prompt, handle_config_request
-from chroma_calls import cdb_query
-from or_calls import expand_prompt
+from fooocus.fc_methods import image_from_prompt, handle_config_request
+from tools.chroma_calls import cdb_query
+from tools.or_calls import expand_prompt
 
 load_dotenv()
 
