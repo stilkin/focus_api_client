@@ -2,7 +2,7 @@ import copy
 import json
 import os.path
 
-from fc_settings import all_fc_styles, default_cfg
+from fooocus.fc_settings import all_fc_styles, default_cfg
 from tools.utilities import save_dict, load_dict, download_file
 
 SERVER_IP = '192.168.178.25'
