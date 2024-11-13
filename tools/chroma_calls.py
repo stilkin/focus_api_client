@@ -1,6 +1,6 @@
 import chromadb
 
-from fc_settings import all_fc_styles
+from fooocus.fc_settings import all_fc_styles
 
 chroma_client = chromadb.PersistentClient('./chroma/chroma.sqlite')
 

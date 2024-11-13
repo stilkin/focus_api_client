@@ -7,9 +7,9 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, filters
 
-from chroma_calls import cdb_query
-from fc_methods import image_from_prompt, handle_config_request
-from or_calls import expand_prompt
+from tools.chroma_calls import cdb_query
+from fooocus.fc_methods import image_from_prompt, handle_config_request
+from tools.or_calls import expand_prompt
 
 load_dotenv()
 TOKEN = os.getenv('TELEGRAM_TOKEN')
