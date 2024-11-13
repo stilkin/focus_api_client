@@ -18,7 +18,7 @@ SYS_PROMPT = (f'You are an assistant that has to work with prompt requests for i
               'you can add an extra field called "debug" and put your message there.')
 
 
-def ask_an_llm(prompt: str, sys_prompt=SYS_PROMPT):
+def ask_an_llm(user_prompt: str, sys_prompt=SYS_PROMPT):
     url = 'https://openrouter.ai/api/v1/chat/completions'
 
     headers = {
@@ -31,7 +31,7 @@ def ask_an_llm(prompt: str, sys_prompt=SYS_PROMPT):
         'model': MODEL,
         'messages': [
             {'role': 'system', 'content': sys_prompt},
-            {'role': 'user', 'content': prompt}
+            {'role': 'user', 'content': user_prompt}
         ]})
     response = requests.post(
         url=url,
@@ -42,13 +42,13 @@ def ask_an_llm(prompt: str, sys_prompt=SYS_PROMPT):
     return json.loads(response.text)
 
 
-def expand_prompt(prompt: str):
-    resp = ask_an_llm(prompt)
+def expand_prompt(user_prompt: str):
+    resp = ask_an_llm(user_prompt)
     if resp is not None and 'choices' in resp and len(resp['choices']) > 0:
         choice = resp['choices'][0]
         if 'message' in choice and 'content' in choice['message']:
             return json.loads(choice['message']['content'])
-    return {'prompt': prompt, 'style': None}  # default
+    return {'prompt': user_prompt, 'style': None}  # default
 
 
 # resp1 = expand_prompt('a pond like Monet')
