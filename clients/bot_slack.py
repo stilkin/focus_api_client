@@ -26,7 +26,9 @@ def handle_command(ack, say, command):
     ack()  # acknowledge the command request
 
     prompt = command['text']
-    print(f'Processing command: "{prompt}"')
+    user_id = command['user_id']
+
+    print(f'Processing command: "{prompt} for user {user_id}"')
 
     expanded_prompt = expand_prompt(prompt)
     print('Expanded prompt: ', json.dumps(expanded_prompt, indent=2))
@@ -44,14 +46,14 @@ def handle_command(ack, say, command):
 
     end_time = time.time()
     duration = round(end_time - start_time, 1)
-    reply = f'Here is your image! I worked on it for {duration} seconds.'
+    reply = f'Here is your image <@{user_id}>! \nI worked on it for {duration} seconds.'
 
     # Upload the file to the channel
     app.client.files_upload_v2(
         channels=command["channel_id"],
         file=local_copy,
-        title=reply,
-        initial_comment=expanded_prompt
+        title=prompt,
+        initial_comment=reply
     )
     os.remove(local_copy)
 
