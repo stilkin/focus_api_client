@@ -1,6 +1,9 @@
 import json
+import sys
 
 import chromadb
+
+sys.path.append('../')
 
 from fooocus.fc_settings import all_fc_styles
 
@@ -34,7 +37,6 @@ def get_style_guess(prompt):
         style_array = cdb_results['documents'][0]
         return json.dumps(style_array)
     return '["Random Style"]'
-
 
 # cdb_insert()  # TODO: RUN ONCE AFTER INSTALLATION
 # print(get_style_guess('an impressionist painting of megatron'))

@@ -7,11 +7,12 @@ from dotenv import load_dotenv
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
+sys.path.append('../')
+
 from fooocus.fc_methods import image_from_prompt
 from tools.chroma_calls import get_style_guess
 from tools.or_calls import expand_prompt
 
-sys.path.append('../')
 load_dotenv()
 
 # initializes Slack app
