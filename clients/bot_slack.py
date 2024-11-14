@@ -20,7 +20,7 @@ app = App(token=os.environ.get('SLACK_BOT_TOKEN'))
 
 
 # Listens to incoming slash commands '/llm'
-@app.command('/llm')
+@app.command('/focus')
 def handle_command(ack, say, command):
     start_time = time.time()
     ack()  # acknowledge the command request
@@ -42,8 +42,8 @@ def handle_command(ack, say, command):
 
     expanded_prompt = json.dumps(expanded_prompt['prompt'])
 
-    reply = (f'I have expanded your prompt to _"{expanded_prompt}"_. \n'
-             f'Please note that image generation will take about 30 seconds...')
+    reply = (f'I have expanded your prompt to _{expanded_prompt}_. ✨\n'
+             f'Please note that image generation will take about 30 seconds... ⏳')
     app.client.chat_postMessage(channel=user_id, text=reply)
 
     # generate and download the image
