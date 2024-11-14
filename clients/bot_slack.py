@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import time
 
 from dotenv import load_dotenv
@@ -10,7 +11,7 @@ from fooocus.fc_methods import image_from_prompt
 from tools.chroma_calls import get_style_guess
 from tools.or_calls import expand_prompt
 
-# sys.path.append('../')
+sys.path.append('../')
 load_dotenv()
 
 # initializes Slack app
@@ -29,7 +30,7 @@ def handle_command(ack, say, command):
     expanded_prompt = expand_prompt(prompt)
     print('Expanded prompt: ', json.dumps(expanded_prompt, indent=2))
 
-    style_arr = None
+    style_arr = []
     if expanded_prompt['style'] is not None:
         style_arr = get_style_guess(json.dumps(expanded_prompt['style']))
     else:
