@@ -11,10 +11,12 @@ APP_TAG = 'Img Prompt Gen'
 MODEL = 'openai/gpt-4o-mini'
 SYS_PROMPT = (f'You are an assistant that has to work with prompt requests for image generation. '
               'You need to do two things with these prompts. '
-              'Firstly, you have to "enrich" the prompt (make it more verbose, clear, explicit). '
-              'Secondly, you have to determine which styles match best with this prompt.'
-              'Answer only with a valid JSON object that contains two fields: "prompt" and "style".'
-              'If you feel like you need to tell me something beyond that, '
+              'Firstly, you have to "enrich" the prompt (make it more verbose, clear and explicit). '
+              'Secondly, you have to determine which styles match best with this prompt. '
+              'If you are unsure about the style or nothing was specified by the user, '
+              'you can default to "photorealism". '
+              'Answer only with a valid JSON object that contains two fields: "prompt" and "style". '
+              'If you feel like you need to explain something beyond that, '
               'you can add an extra field called "debug" and put your message there.')
 
 

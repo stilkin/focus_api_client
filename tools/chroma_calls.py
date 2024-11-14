@@ -8,6 +8,7 @@ sys.path.append('../')
 from fooocus.fc_settings import all_fc_styles
 
 chroma_client = chromadb.PersistentClient('../tools/chroma/chroma.sqlite')
+DEFAULT_STYLES = '["Fooocus V2", "Fooocus Photograph", "Fooocus Negative"]'
 
 
 def cdb_insert():
@@ -36,7 +37,7 @@ def get_style_guess(prompt):
     if cdb_results is not None and 'documents' in cdb_results:
         style_array = cdb_results['documents'][0]
         return json.dumps(style_array)
-    return '["Random Style"]'
+    return DEFAULT_STYLES
 
 # cdb_insert()  # TODO: RUN ONCE AFTER INSTALLATION
 # print(get_style_guess('an impressionist painting of megatron'))
