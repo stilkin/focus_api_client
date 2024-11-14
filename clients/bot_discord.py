@@ -1,12 +1,13 @@
+import json
 import os
 import time
-import json
+
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
 from fooocus.fc_methods import image_from_prompt, handle_config_request
-from tools.chroma_calls import cdb_query
+from tools.chroma_calls import get_style_guess
 from tools.or_calls import expand_prompt
 
 load_dotenv()
@@ -18,14 +19,6 @@ CONFIG_CMD = '/focus_cfg '
 intents = discord.Intents.default()
 intents.message_content = True  # Enable access to message content
 bot = commands.Bot(command_prefix='!', intents=intents)
-
-
-def get_style_guess(prompt):
-    cdb_results = cdb_query(prompt, n_results=3)
-    if cdb_results is not None and 'documents' in cdb_results:
-        style_array = cdb_results['documents'][0]
-        return json.dumps(style_array)
-    return '["Random Style"]'
 
 
 # Event listener for when the bot has connected to the server

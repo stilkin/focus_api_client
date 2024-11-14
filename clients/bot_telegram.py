@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes, filters
 
-from tools.chroma_calls import cdb_query
 from fooocus.fc_methods import image_from_prompt, handle_config_request
+from tools.chroma_calls import get_style_guess
 from tools.or_calls import expand_prompt
 
 load_dotenv()
@@ -68,14 +68,6 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         has_spoiler=True
     )
     os.remove(local_copy)
-
-
-def get_style_guess(prompt):
-    cdb_results = cdb_query(prompt, n_results=3)
-    if cdb_results is not None and 'documents' in cdb_results:
-        style_array = cdb_results['documents'][0]
-        return json.dumps(style_array)
-    return '["Random Style"]'
 
 
 async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
