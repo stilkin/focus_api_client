@@ -14,7 +14,7 @@ SYS_PROMPT = (f'You are an assistant that has to work with prompt requests for i
               'Firstly, you have to "enrich" the prompt (make it more verbose, clear and explicit). '
               'Secondly, you have to determine which styles match best with this prompt. '
               'If you are unsure about the style or nothing was specified by the user, '
-              'you can default to "photorealism". '
+              'you can default to "Fooocus Photograph". '
               'Answer only with a valid JSON object that contains two fields: "prompt" and "style". '
               'If you feel like you need to explain something beyond that, '
               'you can add an extra field called "debug" and put your message there.')
