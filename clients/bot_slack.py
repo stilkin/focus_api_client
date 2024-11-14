@@ -43,6 +43,7 @@ def handle_command(ack, say, command):
     expanded_prompt = json.dumps(expanded_prompt['prompt'])
 
     reply = (f'I have expanded your prompt to _{expanded_prompt}_. ✨\n'
+             f'And I have chosen the following styles for your image: _{style_arr}_. 🎨\n'
              f'Please note that image generation will take about 30 seconds... ⏳')
     app.client.chat_postMessage(channel=user_id, text=reply)
 
