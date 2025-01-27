@@ -5,7 +5,7 @@ import os.path
 from fooocus.fc_settings import all_fc_styles, default_cfg
 from tools.utilities import save_dict, load_dict, download_file
 
-SERVER_IP = '10.125.101.10'
+SERVER_IP = '192.168.178.88'
 
 CONFIG_LIST = 'LIST'
 CONFIG_CLEAR = 'CLEAR'
@@ -74,7 +74,7 @@ def handle_config_request(cfg_command, user_id=None):
 
 
 def image_from_prompt(prompt, user_id=None, custom_styles=None):
-    print(f'Generating image with prompt: {prompt}')
+    print(f'Generating image with prompt: {prompt} for user {user_id}')
     try:
         json_response = generate_image(prompt, user_id, custom_styles)
         resp_obj = json.loads(json_response)
@@ -98,11 +98,10 @@ def generate_image(prompt, user_id=None, custom_styles=None):
 
     current_config = copy.deepcopy(default_cfg)
     current_config.update({'prompt': prompt})
-
     user_config = {}
 
     if user_id is not None:
-        file_config = load_dict(f'{CFG_FOLDER}{user_id}.json')
+        file_config = load_dict(f'./{CFG_FOLDER}{user_id}.json')
         if file_config is not None:
             user_config = file_config
 
@@ -110,6 +109,7 @@ def generate_image(prompt, user_id=None, custom_styles=None):
         if param in current_config:
             print(f'Setting {param} to {user_config.get(param)}')
             current_config.update({param: user_config.get(param)})
+    print(f'setting: {current_config['performance_selection']}')
 
     if custom_styles is not None:
         print(f'Setting style_selections to {custom_styles}')

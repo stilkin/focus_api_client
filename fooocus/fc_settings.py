@@ -287,7 +287,7 @@ default_cfg = {
         "Fooocus Enhance",
         "Fooocus Sharp"
     ],
-    "performance_selection": "Speed",
+    "performance_selection": "Quality",
     "aspect_ratios_selection": "1152*896",
     "image_number": 1,
     "image_seed": -1,
