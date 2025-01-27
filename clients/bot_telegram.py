@@ -14,17 +14,19 @@ from tools.or_calls import expand_prompt
 load_dotenv()
 TOKEN = os.getenv('TELEGRAM_TOKEN')
 
-PROMPT_CMD = 'focus'
-CONFIG_CMD = 'focus_cfg'
+# some constants
+CMD_FC_PROMPT = 'focus'
+CMD_FC_CONFIG = 'focus_cfg'
 
+# logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
-# Define a few command handlers. These usually take the two arguments update and context.
+# define command handlers (with arguments update and context)
 
-async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def focus_generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message is None:
         print(f'Message is none: \n{update}')
         return
@@ -70,7 +72,7 @@ async def generate_image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     os.remove(local_copy)
 
 
-async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def focus_update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if update.message is None:
         print(f'Message is none: \n{update}')
         return
@@ -92,12 +94,12 @@ async def update_config(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 def main() -> None:
     application = Application.builder().token(TOKEN).build()
 
-    application.add_handler(CommandHandler(PROMPT_CMD,
-                                           callback=generate_image,
+    application.add_handler(CommandHandler(CMD_FC_PROMPT,
+                                           callback=focus_generate_image,
                                            filters=filters.ALL))
 
-    application.add_handler(CommandHandler(CONFIG_CMD,
-                                           callback=update_config,
+    application.add_handler(CommandHandler(CMD_FC_CONFIG,
+                                           callback=focus_update_config,
                                            filters=filters.ALL))
 
     application.run_polling(allowed_updates=Update.MESSAGE)
