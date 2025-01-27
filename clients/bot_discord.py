@@ -12,10 +12,11 @@ from tools.or_calls import expand_prompt
 
 load_dotenv()
 
-TOKEN = os.getenv('DISCORD_TOKEN')
-PROMPT_CMD = '/focus '
-CONFIG_CMD = '/focus_cfg '
+# some constants
+CMD_FC_PROMPT = '/focus '
+CMD_FC_CONFIG = '/focus_cfg '
 
+# discord intents
 intents = discord.Intents.default()
 intents.message_content = True  # Enable access to message content
 bot = commands.Bot(command_prefix='!', intents=intents)
@@ -36,7 +37,9 @@ async def on_message(message):
     user_id = message.author.id
 
     if message.content is not None:
-        if message.content.startswith(PROMPT_CMD):
+
+        # handle image prompt msg
+        if message.content.startswith(CMD_FC_PROMPT):
             prompt = message.content.partition(' ')[2]
             start_time = time.time()
             print(f'Currently working on: "{prompt}"')
@@ -67,11 +70,13 @@ async def on_message(message):
             await message.reply(reply, file=file)
             os.remove(local_copy)
 
-        if message.content.startswith(CONFIG_CMD):
+        # handle config msg
+        if message.content.startswith(CMD_FC_CONFIG):
             command = message.content.partition(' ')[2]
             response = handle_config_request(command, user_id)
             await message.author.send(response)
 
 
 # Run the bot with the specified token
+TOKEN = os.getenv('DISCORD_TOKEN')
 bot.run(TOKEN)
